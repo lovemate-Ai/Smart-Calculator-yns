@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D Hardware Style Scientific Calculator</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #121212;
+  font-family: 'Orbitron', monospace;
+}
+
+.calculator {
+  background: linear-gradient(145deg, #3b3b3b, #1e1e1e);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 10px 10px 30px #0c0c0c, -10px -10px 30px #2c2c2c;
+  width: 500px;
+}
+
+.screen {
+  background: #0b0b0b;
+  color: #00ff00;
+  font-size: 2rem;
+  border-radius: 15px;
+  padding: 20px;
+  text-align: right;
+  margin-bottom: 25px;
+  box-shadow: inset 4px 4px 8px #000, inset -4px -4px 8px #222;
+  min-height: 70px;
+  letter-spacing: 2px;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid #00ff00;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+}
+
+button {
+  padding: 18px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease, transform 0.1s ease;
+  color: #fff;
+  background: linear-gradient(145deg, #4b4b4b, #1e1e1e);
+  box-shadow: 4px 4px 10px #111, -4px -4px 10px #444;
+  position: relative;
+}
+
+button:hover {
+  box-shadow: 0 0 15px #00ff00, 0 0 20px #00ff00 inset;
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(4px) rotateX(5deg);
+  box-shadow: inset 4px 4px 8px #111, inset -4px -4px 8px #444;
+}
+
+.operator {
+  background: linear-gradient(145deg, #ff7f50, #ff4500);
+  color: #fff;
+  box-shadow: 3px 3px 8px #222, -3px -3px 8px #ff8c60;
+}
+
+.equal {
+  grid-column: span 2;
+  background: linear-gradient(145deg, #00ffcc, #00b3a6);
+  color: #000;
+  font-weight: bold;
+  box-shadow: 3px 3px 8px #008066, -3px -3px 8px #00ffcc;
+}
+
+.wide {
+  grid-column: span 2;
+}
+
+footer {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 0.8rem;
+  color: #777;
+}
+
+/* Ripple effect for display */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  animation: rippleEffect 0.6s linear;
+  background-color: rgba(0, 255, 0, 0.2);
+  pointer-events: none;
+}
+
+@keyframes rippleEffect {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="calculator">
+  <div class="screen" id="screen">0</div>
+  <div class="buttons">
+    
+    <button class="operator" onclick="appendFunction('Math.sqrt(')">√</button>
+    <button class="operator" onclick="appendFunction('Math.pow(')">x²</button>
+    <button class="operator" onclick="appendFunction('factorial(')">n!</button>
+    <button class="operator" onclick="appendFunction('Math.sin(')">sin</button>
+    <button class="operator" onclick="appendFunction('Math.cos(')">cos</button>
+    <button class="operator" onclick="appendFunction('Math.tan(')">tan</button>
+    <button class="operator" onclick="appendFunction('Math.log(')">log</button>
+
+    
+    <button onclick="appendNumber('7')">7</button>
+    <button onclick="appendNumber('8')">8</button>
+    <button onclick="appendNumber('9')">9</button>
+    <button onclick="appendNumber('4')">4</button>
+    <button onclick="appendNumber('5')">5</button>
+    <button onclick="appendNumber('6')">6</button>
+    <button onclick="appendNumber('1')">1</button>
+    <button onclick="appendNumber('2')">2</button>
+    <button onclick="appendNumber('3')">3</button>
+    <button onclick="appendNumber('0')" class="wide">0</button>
+    <button onclick="appendNumber('.')">.</button>
+
+    
+    <button class="operator" onclick="appendOperator('+')">+</button>
+    <button class="operator" onclick="appendOperator('-')">−</button>
+    <button class="operator" onclick="appendOperator('*')">×</button>
+    <button class="operator" onclick="appendOperator('/')">÷</button>
+    <button class="operator" onclick="appendOperator('%')">%</button>
+    <button class="operator" onclick="appendOperator('^')">^</button>
+    <button class="operator" onclick="appendOperator('(')">(</button>
+    <button class="operator" onclick="appendOperator(')')">)</button>
+    <button class="operator" onclick="appendFunction('1/')">1/x</button>
+    <button class="operator" onclick="appendFunction('Math.exp(')">exp</button>
+    <button class="operator" onclick="appendNumber('Math.PI')">π</button>
+    <button class="operator" onclick="appendNumber('Math.E')">e</button>
+
+  
+    <button onclick="clearScreen()">C</button>
+    <button onclick="deleteLast()">DEL</button>
+    <button class="equal" onclick="calculate()">=</button>
+  </div>
+  <footer>Developer: MD YEASIR NAHID SAIMON</footer>
+</div>
+
+<script>
+let screen = document.getElementById('screen');
+let expression = '';
+
+function appendNumber(num) {
+  if(expression === '0') expression = '';
+  expression += num;
+  screen.innerText = expression;
+}
+
+function appendOperator(op) {
+  expression += op;
+  screen.innerText = expression;
+}
+
+function appendFunction(func) {
+  if(func === '1/') {
+    expression = '1/(' + expression + ')';
+  } else {
+    expression += func;
+  }
+  screen.innerText = expression;
+}
+
+function clearScreen() {
+  expression = '';
+  screen.innerText = '0';
+}
+
+function deleteLast() {
+  expression = expression.slice(0, -1);
+  screen.innerText = expression || '0';
+}
+
+function factorial(n) {
+  n = Math.floor(eval(n));
+  if (n < 0) return NaN;
+  if (n === 0 || n === 1) return 1;
+  let f = 1;
+  for(let i=2;i<=n;i++) f *= i;
+  return f;
+}
+
+function calculate() {
+  try {
+    let exp = expression.replace(/\^/g, '**');
+    exp = exp.replace(/factorial\((.*?)\)/g, (m, p1) => factorial(p1));
+    let result = eval(exp);
+    screen.innerText = result;
+    expression = result.toString();
+  } catch {
+    screen.innerText = 'Error';
+    expression = '';
+  }
+}
+</script>
+
+</body>
+</html>
